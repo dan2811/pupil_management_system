@@ -35,6 +35,7 @@ const Barcenter = styled.div`
 
 const Title = styled.h1`
   color: white;
+  font-weight: 300;
 `;
 
 

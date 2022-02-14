@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components';
+import Navbar from '../Components/navbar';
 
 const Wrapper = styled.div``;
 
@@ -10,9 +11,7 @@ color: white;
 const Diary = () => {
   return (
     <Wrapper>
-        <Title>
-            Diary
-        </Title>
+        <Navbar />
     </Wrapper>
         
   )
