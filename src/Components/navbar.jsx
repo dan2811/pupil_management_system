@@ -1,9 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from "styled-components";
-import Menu from './menu';
-
-const Wrapper = styled.div``;
+import MenuIcon from './menuIcon';
 
 const Bar = styled.div` 
   width: 100vw;
@@ -11,6 +9,7 @@ const Bar = styled.div`
   background-color: black;
   display: flex;
   justify-content: space-between;
+  z-index: 100;
 `;
 
 const Barright = styled.div`
@@ -47,7 +46,7 @@ const Navbar = () => {
     <div>
       <Bar>
         <Barleft>
-          <Menu />
+          <MenuIcon />
         </Barleft>
         
         <Barcenter>

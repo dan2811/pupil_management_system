@@ -1,37 +1,24 @@
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import MenuOpenRoundedIcon from '@mui/icons-material/MenuOpenRounded';
-import styled, { keyframes } from "styled-components";
+import React from 'react'
+import styled from 'styled-components';
 import { Link } from "react-router-dom";
-import { useRef, useState, useEffect } from 'react';
-import ClickAwayListener from '@mui/base/ClickAwayListener';
+
 
 const Wrapper = styled.div`
-position: relative;
+    position: relative;
 `;
-
-const moveInFromTop = keyframes`
-  from {
-    transform: translate(0%, -200%);
-  }
-
-  to {
-    transform: translate(0%, 0%);
-  }
-`;
-
-
 
 const MenuItems = styled.div`
     font-size: 2rem;
     font-weight: 100;
     padding: 2rem;
     background-color: black;
+    display: flex;
     opacity: 75%;
     position: absolute;
-    display: flex;
+    top: 1.7rem;
     left: 2rem;
     flex-direction: column;
-    animation: ${moveInFromTop} 0.5s ease-in-out;
+    z-index: -2;
 `;
 
 const StyledLink = styled(Link)`
@@ -40,37 +27,22 @@ const StyledLink = styled(Link)`
 `;    
 
 
-const Menu = () => {
-    const [clicked, setClicked] = useState(true);
+const Menu = ({styles}) => {
 
   return (
-    <ClickAwayListener onClickAway={() => {setClicked(true)}}>
-        <Wrapper>
-            { clicked ? 
-                <MenuRoundedIcon style={{ color: 'white'}} 
-                onClick={() => {setClicked(false)}}/>
-                :
-                <MenuOpenRoundedIcon style={{ color: 'white'}}
-                onClick={() => {setClicked(true)}} />
-            }
-            { clicked ?
-                ""
-                :
-                <MenuItems clicked={clicked} >
-                    <StyledLink to="/">
-                        Home
-                    </StyledLink>
-                    <StyledLink to="/diary">
-                        Diary
-                    </StyledLink>
-                    <StyledLink to="/register">
-                        Register
-                    </StyledLink> 
-                </MenuItems> 
-            }
-        
-        </Wrapper>
-    </ClickAwayListener>
+    <Wrapper>
+      <MenuItems style={styles}>
+        <StyledLink to="/">
+            Home
+        </StyledLink>
+        <StyledLink to="/diary">
+            Diary
+        </StyledLink>
+        <StyledLink to="/register">
+            Register
+        </StyledLink> 
+      </MenuItems>
+    </Wrapper>
   )
 }
 

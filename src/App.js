@@ -1,7 +1,6 @@
 import Register from './Pages/register';
 import Diary from './Pages/diary';
 import Home from './Pages/home';
-import Navbar from './Components/navbar.jsx';
 
 import {
   BrowserRouter,
