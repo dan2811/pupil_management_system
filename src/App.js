@@ -7,12 +7,14 @@ import {
   Routes,
   Route
 } from "react-router-dom";
+import Tasters from './Pages/tasters';
 
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path='/tasters' element={<Tasters />} />
         <Route path='/register' element={<Register />} />
         <Route path='/diary' element={<Diary />} />
         <Route path='/' element={<Home />} />

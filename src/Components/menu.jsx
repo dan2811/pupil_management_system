@@ -69,6 +69,15 @@ const Menu = () => {
               'Register'
             } />
       </StyledLink>
+      
+      <StyledLink to="/tasters">
+        <Boop 
+          rotation={5} 
+          timing={150} 
+          children={
+              'Tasters'
+            } />
+      </StyledLink>
 
       </MenuItems>
     </Wrapper>

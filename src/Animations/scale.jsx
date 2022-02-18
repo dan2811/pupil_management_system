@@ -29,7 +29,7 @@ export const Scale = ({ scale = 1.1, timing = 150, children }) => {
       setScaled(true);
     };
     return (
-      <animated.span onMouseEnter={trigger} style={style}>
+      <animated.span onClick={trigger} style={style}>
         {children}
       </animated.span>
     );

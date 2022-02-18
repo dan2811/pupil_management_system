@@ -4,7 +4,7 @@ import Navbar from '../Components/navbar';
 const Home = () => {
   return (
     <div>
-        <Navbar title={window.location.href}/>
+        <Navbar />
     </div>
   )
 }
