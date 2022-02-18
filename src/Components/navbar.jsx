@@ -96,7 +96,7 @@ const Navbar = () => {
 
   const user = true;
 
-  const [isAdmin, setisAdmin] = useState(true);
+  const [isAdmin] = useState(true);
 
   return (
     <div>
