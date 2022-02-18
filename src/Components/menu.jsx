@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components';
 import { Link } from "react-router-dom";
+import { Boop } from '../Animations/boop';
+
 
 
 const Wrapper = styled.div`
@@ -24,23 +26,45 @@ const MenuItems = styled.div`
 const StyledLink = styled(Link)`
     color: white;
     padding: 1rem;
+    text-decoration: none;
 `;    
 
 
-const Menu = ({styles}) => {
+
+
+
+const Menu = () => {
 
   return (
     <Wrapper>
-      <MenuItems style={styles}>
-        <StyledLink to="/">
-            Home
-        </StyledLink>
-        <StyledLink to="/diary">
-            Diary
-        </StyledLink>
-        <StyledLink to="/register">
-            Register
-        </StyledLink> 
+      <MenuItems>
+      <StyledLink to="/">
+        <Boop 
+          rotation={5} 
+          timing={150} 
+          children={
+                'Home'
+              } />
+      </StyledLink>
+
+      <StyledLink to="/diary">
+        <Boop 
+          rotation={5} 
+          timing={150} 
+          children={
+                'Diary'
+              } />
+      </StyledLink>
+
+      <StyledLink to="/register">
+        <Boop 
+          rotation={5} 
+          timing={150} 
+          children={
+              'Register'
+            } />
+      </StyledLink>
+
       </MenuItems>
     </Wrapper>
   )
