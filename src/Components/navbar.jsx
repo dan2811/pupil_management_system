@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from "styled-components";
 import MenuIcon from './menuIcon';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
+import { Scale } from '../Animations/scale';
 
 const Bar = styled.div` 
   width: 100vw;
@@ -11,6 +12,7 @@ const Bar = styled.div`
   display: flex;
   justify-content: space-between;
   z-index: 100;
+  box-shadow: 0px 0px 20px black;
 `;
 
 const Barright = styled.div`
@@ -50,7 +52,6 @@ const LoginButton = styled.button`
   border-radius: 5%;
   padding: 0.5rem;
   &:hover {
-    transform: scale(1.1, 1.1);
     box-shadow: 0px 0px 20px white;
     cursor: pointer;
   };
@@ -63,6 +64,7 @@ const Account = styled.div`
   background-color: white;
   padding: 0.2rem;
   border-radius: 50%;
+  will-change: transform;
   &:hover {
     transform: scale(1.1, 1.1);
     box-shadow: 0px 0px 20px white;
@@ -70,12 +72,31 @@ const Account = styled.div`
   };
 `;
 
+const AdminControls = styled.button`
+  background-color: white;
+  font-weight: 200;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 5%;
+  margin-right: 2rem;
+  padding: 0.5rem;
+  &:hover {
+    box-shadow: 0px 0px 20px white;
+    cursor: pointer;
+  };
+`
+
 
 const Navbar = () => {
 
   const location = useLocation();
 
   const user = true;
+
+  const [isAdmin, setisAdmin] = useState(true);
 
   return (
     <div>
@@ -89,7 +110,22 @@ const Navbar = () => {
         </Barcenter>
 
         <Barright>
-          {user ? <Account><AccountCircleRoundedIcon/></Account> : <LoginButton>Login</LoginButton>}
+          {isAdmin
+          ? <Scale
+            children={<AdminControls>Admin Controls</AdminControls>}
+            />
+          : ''}
+          {user 
+          ? <Scale 
+          scale={1.1}
+          timing={200}
+          children={<Account><AccountCircleRoundedIcon/></Account>}
+          /> 
+          : <Scale 
+          scale={1.1}
+          timing={200}
+          children={<LoginButton>Login</LoginButton>}
+          />}
         </Barright>
 
       </Bar>

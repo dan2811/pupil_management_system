@@ -21,12 +21,17 @@ const MenuItems = styled.div`
     left: 2rem;
     flex-direction: column;
     z-index: -2;
+    box-shadow: 0px 0px 20px black;
+
 `;
 
 const StyledLink = styled(Link)`
     color: white;
     padding: 1rem;
     text-decoration: none;
+    &:hover {
+      text-shadow: 0px 0px 20px white;
+    }
 `;    
 
 
