@@ -25,17 +25,18 @@ const StyledMenuIconOpen = styled(MenuOpenRoundedIcon)`
 
 const MenuIcon = () => {
     const [clicked, setClicked] = useState(false);
+
     const handleClick = () => {
         setClicked(!clicked);
     };
 
     const transition = useTransition(clicked, {
-        from: { y: -300, zIndex: -1 },
-        enter: { y: 0, zIndex: -1 },
-        leave: { y: -300, zIndex: -1 },
+        from: { y: -350, opacity: 0 },
+        enter: { y: 0, opacity: 1 },
+        leave: { y: -350, opacity: 0 },
     });
 
-  return (
+    return (
     <ClickAwayListener onClickAway={() => {setClicked(false)}}>
         <Wrapper>
             { clicked ?

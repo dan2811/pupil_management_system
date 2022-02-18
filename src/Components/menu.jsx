@@ -15,14 +15,14 @@ const MenuItems = styled.div`
     padding: 2rem;
     background-color: black;
     display: flex;
-    opacity: 75%;
+    opacity: 90%;
     position: absolute;
     top: 1.7rem;
     left: 2rem;
     flex-direction: column;
-    z-index: -2;
+    z-index: 0;
     box-shadow: 0px 0px 20px black;
-
+    border-radius: 10px;
 `;
 
 const StyledLink = styled(Link)`
@@ -33,9 +33,6 @@ const StyledLink = styled(Link)`
       text-shadow: 0px 0px 20px white;
     }
 `;    
-
-
-
 
 
 const Menu = () => {
