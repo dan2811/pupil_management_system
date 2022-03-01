@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '../Components/navbar';
 import styled from 'styled-components';
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+import Badge from '@mui/material/Badge';
+import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
+
+
 
 const Wrapper = styled.div`
   display: flex;
@@ -12,76 +19,123 @@ const Wrapper = styled.div`
   z-index: -10;
 `;
 
-const Headers = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
-
-const LeftHeaders = styled.div`
-  display: flex;
-  width: 40vw;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const RightHeaders = styled.div`
-  display: flex;
-  width: 40vw;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const DateNavigation = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.6rem;
-`;
-
-
-const DateHeader = styled.div`
-  display: flex;
-
-`;
-
-const Row = styled.div`
-  display: flex;
-  width: 100vw;
-  height: 5vh;
-  background-color: green;
+const Table = styled.table`
   border: 2px solid black;
-  border-style: none solid solid solid;
+  border-collapse: collapse;
+  `;
+
+const Tr = styled.tr`
+  border: 2px solid black;
+  &:hover{
+    background-color: #dddddd;
+  }
 `;
 
-const Column = styled.div`
-  display: flex;
-  width: fit-content;
-  height: inherit;
-  border-style: none solid none none;
-  background-color: blue;
+
+const TableHeader = styled.th`
+  border-bottom: 4px solid black;
+`;
+
+const DateHeader = styled.th`
+  font-weight: 500;
+  border-bottom: 4px solid black;
+  text-align: left;
+`;
+
+const DateNav = styled.td`
+  border-bottom: 4px solid black;
+`;
+
+const Data = styled.td`
+  text-align: center;
+`;
+
+const Attendance = styled.td`
+  padding: 0.4rem 0;
 `;
 
 const Register = () => {
+  const [attendance, setAttendance] = useState(null);
+  const handleAttendanceClick = () => {
+    switch(attendance) {
+      case null: 
+        setAttendance('A');
+        break;
+      case 'A':
+        setAttendance('C');
+        break;
+      case 'C':
+        setAttendance("DNA");
+        break;
+      default:
+        setAttendance(null);
+    };
+  };
   return (
     <div>
         <Navbar />
         <Wrapper>
-          <Headers>
-            <LeftHeaders>
-              <Column>Time</Column>
-              <Column>Teacher</Column>
-              <Column>Instrument</Column>
-              <Column>Type</Column>
-              <Column>First Name</Column>
-              <Column>Last Name</Column>
-            </LeftHeaders>
-            <RightHeaders>
-              <DateNavigation></DateNavigation>
-              <DateHeader>Date</DateHeader>
-            </RightHeaders>
-          </Headers>
-          <Row></Row>
-          <Row></Row>
+          <Table>
+            <Tr>
+              <TableHeader>Time</TableHeader>
+              <TableHeader>Teacher</TableHeader>
+              <TableHeader>Instrument</TableHeader>
+              <TableHeader>Type</TableHeader>
+              <TableHeader>First Name</TableHeader>
+              <TableHeader>Last Name</TableHeader>
+
+              <DateNav><ArrowBackIosNewRoundedIcon /></DateNav>
+              <DateHeader>Date 1</DateHeader>
+              <DateHeader>Date 2</DateHeader>
+              <DateHeader>Date 3</DateHeader>
+              <DateHeader>Date 4</DateHeader>
+              <DateNav><ArrowForwardIosRoundedIcon /></DateNav>
+            </Tr>
+            <Tr>
+              <Data>time 1</Data>
+              <Data>teacher 1</Data>
+              <Data>instrument 1</Data>
+              <Data>class 1</Data>
+              <Data>name 1</Data>
+              <Data>lastname 1</Data>
+              <Data />
+
+              <Attendance onClick={handleAttendanceClick} >
+                <Badge badgeContent={attendance}>
+                  {attendance === null && <CheckBoxOutlineBlankOutlinedIcon />}
+                  {attendance === 'A' && <CheckBoxOutlinedIcon />}
+                  {(attendance === 'C' || attendance === 'DNA') && <IndeterminateCheckBoxOutlinedIcon />}
+                </Badge>
+
+              </Attendance>
+              <Attendance onClick={handleAttendanceClick} >
+                <Badge badgeContent={attendance}>
+                  {attendance === null && <CheckBoxOutlineBlankOutlinedIcon />}
+                  {attendance === 'A' && <CheckBoxOutlinedIcon />}
+                  {(attendance === 'C' || attendance === 'DNA') && <IndeterminateCheckBoxOutlinedIcon />}
+                </Badge>
+
+              </Attendance>
+              <Attendance onClick={handleAttendanceClick} >
+                <Badge badgeContent={attendance}>
+                  {attendance === null && <CheckBoxOutlineBlankOutlinedIcon />}
+                  {attendance === 'A' && <CheckBoxOutlinedIcon />}
+                  {(attendance === 'C' || attendance === 'DNA') && <IndeterminateCheckBoxOutlinedIcon />}
+                </Badge>
+
+              </Attendance>
+              <Attendance onClick={handleAttendanceClick} >
+                <Badge badgeContent={attendance}>
+                  {attendance === null && <CheckBoxOutlineBlankOutlinedIcon />}
+                  {attendance === 'A' && <CheckBoxOutlinedIcon />}
+                  {(attendance === 'C' || attendance === 'DNA') && <IndeterminateCheckBoxOutlinedIcon />}
+                </Badge>
+
+              </Attendance>
+              <Data />
+
+            </Tr>
+          </Table>
         </Wrapper>
     </div>
   )

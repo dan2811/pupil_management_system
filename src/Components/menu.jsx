@@ -7,6 +7,7 @@ import { Boop } from '../Animations/boop';
 
 const Wrapper = styled.div`
     position: relative;
+    z-index: -10;
 `;
 
 const MenuItems = styled.div`
@@ -20,7 +21,6 @@ const MenuItems = styled.div`
     top: 1.7rem;
     left: 2rem;
     flex-direction: column;
-    z-index: 0;
     box-shadow: 0px 0px 20px black;
     border-radius: 10px;
 `;
@@ -73,6 +73,15 @@ const Menu = () => {
           timing={150} 
           children={
               'Tasters'
+            } />
+      </StyledLink>
+
+      <StyledLink to="/database">
+        <Boop 
+          rotation={5} 
+          timing={150} 
+          children={
+              'Database'
             } />
       </StyledLink>
 

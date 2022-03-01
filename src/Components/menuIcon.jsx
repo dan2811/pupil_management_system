@@ -9,6 +9,7 @@ import { useTransition, animated } from 'react-spring';
 
 const Wrapper = styled.div`
     position: relative;
+    z-index: 0;
     display: flex;
 `;
 

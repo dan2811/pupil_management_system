@@ -6,12 +6,13 @@ import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import { Scale } from '../Animations/scale';
 
 const Bar = styled.div` 
+  position: relative;
+  z-index: 100;
   width: 100vw;
   height: 8vh;
   background-color: black;
   display: flex;
   justify-content: space-between;
-  z-index: 100;
   box-shadow: 0px 0px 20px black;
 `;
 
