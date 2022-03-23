@@ -13,7 +13,7 @@ const Wrapper = styled.div`
 
 `;
 
-const DateChooser = ({setStartDate}) => {
+const DateChooser = ({setStartDateAndDay}) => {
 
     const [value, setValue] = useState(null);
 
@@ -25,7 +25,7 @@ const DateChooser = ({setStartDate}) => {
                 value={value}
                 onChange={(newValue) => {
                 setValue(newValue);
-                setStartDate(newValue);
+                setStartDateAndDay(newValue);
                 }}
                 renderInput={(params) => <TextField {...params} />}
             />

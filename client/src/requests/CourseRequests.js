@@ -11,7 +11,7 @@ export const createCourseRequest = async (data) => {
 
 export const retrieveCoursesRequest = async () => {
     try {
-        const result = await axios.get('http://localhost:5000/coursess');
+        const result = await axios.get('http://localhost:5000/courses');
         return result;
     } catch (e) {
         throw new Error(e);

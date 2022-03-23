@@ -216,7 +216,7 @@ const CourseTable = () => {
                 if(!error) await fetchCoursesFromDatabase();
             })
             ();
-        },[error]);
+        },[]);
 
   return (
     <Wrapper>
@@ -306,7 +306,7 @@ const CourseTable = () => {
                     </Tbody>
         </Table>
         {newCourseFormDisplay ? <RemoveButton onClick={()=>setNewCourseFormDisplay(false)}/> : <AddButton onClick={()=>setNewCourseFormDisplay(true)}/>}
-        {error && <SnackBar severity="error" message={error} />}
+       
     </Wrapper>
   )
 }

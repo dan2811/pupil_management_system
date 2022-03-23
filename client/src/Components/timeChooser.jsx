@@ -23,7 +23,7 @@ const TimeChooser = ({setTime}) => {
                 value={value}
                 onChange={(newValue) => {
                 setValue(newValue);
-                setTime(newValue);
+                setTime((new Date(newValue).getHours()*60) + (new Date(newValue).getMinutes()));
                 }}
                 renderInput={(params) => <TextField {...params} />}
             />

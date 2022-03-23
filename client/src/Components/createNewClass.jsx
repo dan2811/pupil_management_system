@@ -11,11 +11,14 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import { retrieveTeachersRequest } from '../requests/TeacherRequests';
 import { retrieveCoursesRequest } from '../requests/CourseRequests';
 import DateChooser from './dateChooser';
-import { sundayFirstDaysOfWeek } from '../services/businessDetails';
+import { sundayFirstDaysOfWeek, daysOfWeek } from '../services/businessDetails';
 import TimeChooser from './timeChooser';
+import SnackBar from './snackBar';
+import { Alert, Snackbar, SnackbarContent } from '@mui/material';
 
 
 
@@ -57,9 +60,9 @@ const Day = styled(TextField)`
     width: 8rem;
 `;
 
-// const Submit = styled(button)`
+const Submit = styled(Button)`
 
-// `;
+`;
 
 const CreateNewClass = () => {
 
@@ -77,13 +80,56 @@ const CreateNewClass = () => {
         }
     }
 
+    const handleCreateNewClass = async () => {
+        if(validate()) {
+            setError(false);
+            const newClass = {
+                day,
+                time,
+                lessonLengthAsMinutes: 60,
+                teacher: allTeachers.find(teacher => teacher.name === selectedTeacher),
+                pupils: [],
+                selectedInstrument,
+                type: "Class",
+                startDate,
+                selectedCourse
+            };
+        console.log();
+    } else {
+        console.log("error");
+        setError(true);
+    }
+    }
+    
+    const setStartDateAndDay = (value) => {
+        setStartDate(value);
+        setDay(
+            sundayFirstDaysOfWeek[new Date(value).getDay()]
+        );
+    };
+
+    const validate = () => {
+        const allState = [selectedTeacher, startDate, day, time, selectedCourse];
+        let tracker = true;
+        for(let i = 0; i < allState.length; i++) {
+            if(!allState[i]) {
+                tracker = false;
+            };
+        };
+        return tracker;
+    };
+    
     const [selectedTeacher, setSelectedTeacher] = useState('');
     const [allTeachers, setAllTeachers] = useState([]);
     const [startDate, setStartDate] = useState(null);
-    const [Time, setTime] = useState(null);
+    const [time, setTime] = useState(null);
     const [day, setDay] = useState('');
+    const [selectedInstrument, setSelectedInstrument] = useState('');
+    const [allInstruments, setAllInstruments] = useState(null);
     const [selectedCourse, setSelectedCourse] = useState('');
     const [allCourses, setAllCourses] = useState([]);
+    const [error, setError] = useState(false);
+
 
     useEffect(() => {
         retrieveTeacherData();
@@ -110,17 +156,17 @@ const CreateNewClass = () => {
                     label="Teacher"
                     onChange={(e)=>setSelectedTeacher(e.target.value)}
                     >
-                        {allTeachers.map((teacher) => (
+                        {allTeachers.map((teacher, idx) => (
                             <MenuItem 
                             value={teacher.name}
-                            key={teacher}
+                            key={`${teacher}-${idx}`}
                             >
                                 {teacher.name}
                             </MenuItem>
                         ))}
                     </StyledSelect>
 
-                    <DateChooser setStartDate={setStartDate} />
+                    <DateChooser setStartDateAndDay={setStartDateAndDay} />
 
                     <Day 
                     margin="normal"
@@ -142,18 +188,33 @@ const CreateNewClass = () => {
                     label="Course"
                     onChange={(e)=>setSelectedCourse(e.target.value)}
                     >
-                        {allCourses.map((course) => (
+                        {allCourses.map((course, idx) => (
                             <MenuItem 
                             value={course.name}
-                            key={course}
+                            key={`${course}-${idx}`}
                             >
                                 {course.name}
                             </MenuItem>
                         ))}
                     </StyledSelect>
-                    
                     </Form>
-
+                    <Submit 
+                    variant='contained' 
+                    onClick={handleCreateNewClass}
+                    >
+                        Create Class
+                    </Submit>
+                {error && 
+                    <Snackbar 
+                    open={true}
+                    autoHideDuration={3000}
+                    onClose={() => setError(false)}
+                    >
+                        <Alert severity="error" sx={{ width: '100%' }}>
+                            Please ensure all fields are complete!
+                        </Alert>    
+                    </Snackbar>
+                }
             </StyledAccordionDetails>
         </StyledAccordion>
     </Wrapper>
