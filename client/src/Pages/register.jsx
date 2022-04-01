@@ -14,6 +14,7 @@ import { retrieveTeachersRequest } from '../requests/TeacherRequests';
 import { convertDbTimeToLocal } from '../services/timeOpsForDB';
 import AttendanceCheckbox from '../Components/attendanceCheckbox';
 import { Snackbar } from '@mui/material';
+import { useSelector } from 'react-redux';
 
 
 
@@ -93,6 +94,8 @@ const Attendance = styled.td`
 
 const Register = () => {
 
+  const lessons = useSelector(state => state.lessons.lessons);
+
   const retrievePupilData = async () => {
     const result = await retrievePupilsRequest();
     setAllPupils(result.data);
@@ -101,6 +104,7 @@ const Register = () => {
   const retrieveLessonData = async () => {
     setLoading(true);
     const result = await retrieveClassesRequest();
+    console.log(result.data);
     setAllClasses(result.data);
     result.data && setLoading(false);
     result.response?.status > 399 && setError(true); setErrorDetails(result);
@@ -115,8 +119,7 @@ const Register = () => {
 
   const handleAttendanceClick = () => {
 
-  }
-
+  };
   
   const [allPupils, setAllPupils] = useState([]);
   const [allClasses, setAllClasses] = useState(null);
@@ -132,12 +135,34 @@ const Register = () => {
     retrieveTeacherData();
   }, []);
 
+  useEffect(() => {
+    allClasses?.forEach((lesson) => {
+      lesson.pupils.sort((a, b) => {
+        const pupilA = allPupils.find((pupil) => pupil._id === a);
+        const pupilB = allPupils.find((pupil) => pupil._id === b);
+        if(pupilA?.lastName < pupilB?.lastName) {
+          return -1;
+        }
+        if(pupilA?.lastName > pupilB?.lastName) {
+          return 1;
+        }
+        return 0;
+      });
+    });
+    allClasses?.sort((a, b) => {
+      if(a.timeAsMinutesPastMidnight < b.timeAsMinutesPastMidnight) {
+        return -1;
+      }
+      if(a.timeAsMinutesPastMidnight > b.timeAsMinutesPastMidnight) {
+        return 1;
+      }
+      return 0;
+    });
+  }, [allClasses, allPupils])
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
-  console.log(allClasses);
 
 
   return (
@@ -187,7 +212,7 @@ const Register = () => {
             </thead>
             <tbody>
 
-              {allClasses?.map((lesson, classIdx) => (
+              {lessons?.map((lesson) => (
                 lesson.day === daysOfWeek[value] &&
                 lesson.pupils.map((pupilId, pupilIdx) => (
                   <Tr key={`pupil-${pupilIdx}`}>
@@ -205,7 +230,6 @@ const Register = () => {
                     attended={date.pupils.filter(student => student.pupil_id === pupilId)[0]?.attended} 
                     notes={date.pupils.filter(student => student.pupil_id === pupilId)[0]?.notes}
                     pupilId={pupilId}
-                    handleAttendanceClick={handleAttendanceClick}
                     allClasses={allClasses}
                     date={date}
                     day={daysOfWeek[value]}

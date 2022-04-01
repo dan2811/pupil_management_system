@@ -11,6 +11,9 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { daysOfWeek } from '../services/businessDetails';
 import { instrumentsTaught } from '../services/businessDetails';
+import { updateTeacher } from '../redux/teacherSlice';
+
+import { useDispatch, useSelector } from 'react-redux';
 
 
 import {
@@ -25,6 +28,10 @@ import {
     ListItemIcon, 
     ListItemText 
 } from '@mui/material';
+import { getTeachers } from '../redux/teacherSlice';
+import { getLessons } from '../redux/lessonSlice';
+import { getCourses } from '../redux/courseSlice';
+import { getInstruments } from '../redux/instrumentSlice';
 
 
 const Wrapper = styled.div`
@@ -150,13 +157,20 @@ const TeacherTable = () => {
     const [editRow, setEditRow] = useState(null);
     const [editTeacher, setEditTeacher] = useState(null);
 
-    
-    const fetchTeachersFromDatabase = async () => {
-        const retrievedTeachers = await retrieveTeachersRequest();
-            if(retrievedTeachers) {
-                setTeachers(retrievedTeachers.data);
-            };
-    };
+
+
+
+
+
+    const reduxTeachers = useSelector((state) => state.teachers.teachers);
+
+
+
+
+
+
+
+    const dispatch = useDispatch();
 
     const handleAddNewTeacher = async () => {
         const newTeacher = {
@@ -168,8 +182,7 @@ const TeacherTable = () => {
             const result = await createTeacherRequest(newTeacher);
             if(result) {
                 setNewTeacherFormDisplay(false);
-                fetchTeachersFromDatabase();
-            }
+                dispatch(getTeachers());            }
             console.log(result.data);
         } catch (e) {
             console.log(e);
@@ -190,9 +203,9 @@ const TeacherTable = () => {
 
     const updateTeacher = async () => {
         try {
-            const result = await updateTeacherRequest(editTeacher);
+            const result = await dispatch(updateTeacher(editTeacher));
             console.log(result.data);
-            fetchTeachersFromDatabase();
+            dispatch(getTeachers());
             setEditRow(null);
         } catch (e) {
             console.error(e);
@@ -244,13 +257,6 @@ const TeacherTable = () => {
         };
     }
 
-        useEffect( () => {
-            const main = async () => {
-                fetchTeachersFromDatabase();
-            }
-            return main();
-        },[]);
-
   return (
     <Wrapper>
         <h1>Teachers</h1>
@@ -262,7 +268,7 @@ const TeacherTable = () => {
                         <Th>Days</Th>
                     </Thead>
                     <Tbody>
-                        {teachers?.map((teacher, rowIdx) => (
+                        {reduxTeachers?.map((teacher, rowIdx) => (
                             <Tr key={`teacher-${rowIdx}`}>
                                 <Td edit={true}><DeleteButton onClick={() => deleteTeacher(teacher)}/></Td>
                                 <Td>

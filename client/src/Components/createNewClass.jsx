@@ -12,6 +12,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import NewClassTable from './newClassTable';
 import { retrieveTeachersRequest } from '../requests/TeacherRequests';
 import { retrieveCoursesRequest } from '../requests/CourseRequests';
 import DateChooser from './dateChooser';
@@ -94,7 +95,6 @@ const CreateNewClass = () => {
                 startDate,
                 selectedCourse
             };
-        console.log();
     } else {
         console.log("error");
         setError(true);
@@ -139,6 +139,7 @@ const CreateNewClass = () => {
 
   return (
     <Wrapper>
+        <NewClassTable />
         <StyledAccordion>
             <StyledAccordionSummary expandIcon={<ExpandIcon />}>
                 <StyledSchoolIcon />
@@ -215,6 +216,17 @@ const CreateNewClass = () => {
                         </Alert>    
                     </Snackbar>
                 }
+            </StyledAccordionDetails>
+        </StyledAccordion>
+        <StyledAccordion>
+            <StyledAccordionSummary expandIcon={<ExpandIcon />}>
+                <StyledSchoolIcon />
+                <Typography>
+                    New Classes
+                </Typography>
+            </StyledAccordionSummary>
+            <StyledAccordionDetails>
+                Classes here!
             </StyledAccordionDetails>
         </StyledAccordion>
     </Wrapper>

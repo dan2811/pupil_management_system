@@ -81,7 +81,7 @@ const EditNoteContainer = styled.div`
 
 `;
 
-const AttendanceCheckbox = ({attended, notes, pupilId, handleAttendanceClick, allClasses, date, day, loading, setLoading, lessonId, setAllClasses}) => {
+const AttendanceCheckbox = ({attended, notes, pupilId, allClasses, date, day, loading, setLoading, lessonId, setAllClasses}) => {
     
     
     const returnCheckboxIcon = () => {

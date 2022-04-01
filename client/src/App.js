@@ -2,7 +2,8 @@ import Register from './Pages/register';
 import Diary from './Pages/diary';
 import Home from './Pages/home';
 import Database from './Pages/database';
-
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   BrowserRouter,
   Routes,
@@ -11,9 +12,26 @@ import {
 import Tasters from './Pages/tasters';
 import AdminControls from './Pages/adminControls';
 import NewClasses from './Pages/newClasses';
+import { getTeachers } from './redux/teacherSlice';
+import { getLessons } from './redux/lessonSlice';
+import { getCourses } from './redux/courseSlice';
+import { getInstruments } from './redux/instrumentSlice';
 
 
 function App() {
+  
+  const dispatch = useDispatch();
+  useEffect( () => {
+    const main = async () => {
+        dispatch(getTeachers());
+        dispatch(getLessons());
+        dispatch(getCourses());
+        dispatch(getInstruments());
+    }
+    return main();
+},[]);
+
+
   return (
     <BrowserRouter>
       <Routes>
