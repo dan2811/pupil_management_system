@@ -16,6 +16,7 @@ import { getTeachers } from './redux/teacherSlice';
 import { getLessons } from './redux/lessonSlice';
 import { getCourses } from './redux/courseSlice';
 import { getInstruments } from './redux/instrumentSlice';
+import { getPupils } from './redux/pupilSlice';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         dispatch(getLessons());
         dispatch(getCourses());
         dispatch(getInstruments());
+        dispatch(getPupils());
     }
     return main();
 },[]);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
@@ -11,28 +11,16 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { daysOfWeek } from '../services/businessDetails';
 import { instrumentsTaught } from '../services/businessDetails';
-import { updateTeacher } from '../redux/teacherSlice';
+import { createTeacher, updateTeacher, deleteTeacher } from '../redux/teacherSlice';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-
-import {
-    createTeacherRequest,
-    retrieveTeachersRequest, 
-    updateTeacherRequest,
-    deleteTeacherRequest 
-} from '../requests/TeacherRequests';
 import { 
     Checkbox, 
     ListItemButton, 
     ListItemIcon, 
     ListItemText 
 } from '@mui/material';
-import { getTeachers } from '../redux/teacherSlice';
-import { getLessons } from '../redux/lessonSlice';
-import { getCourses } from '../redux/courseSlice';
-import { getInstruments } from '../redux/instrumentSlice';
-
 
 const Wrapper = styled.div`
     display: flex;
@@ -150,62 +138,38 @@ const Input = styled.input`
 
 const TeacherTable = () => {
     const [newTeacherFormDisplay, setNewTeacherFormDisplay] = useState(false);
-    const [newTeacherInstruments, setNewTeacherInstruments] = useState([]);
-    const [newTeacherName, setNewTeacherName] = useState('');
-    const [newTeacherDays, setNewTeacherDays] = useState([]);
-    const [teachers, setTeachers] = useState([]);
+    const [newTeacher, setNewTeacher] = useState({
+        name: '',
+        instruments: [],
+        days: []
+    });
     const [editRow, setEditRow] = useState(null);
     const [editTeacher, setEditTeacher] = useState(null);
 
-
-
-
-
-
     const reduxTeachers = useSelector((state) => state.teachers.teachers);
-
-
-
-
-
-
 
     const dispatch = useDispatch();
 
     const handleAddNewTeacher = async () => {
-        const newTeacher = {
-            name: newTeacherName,
-            days: newTeacherDays,
-            instruments: newTeacherInstruments
-        };
         try {
-            const result = await createTeacherRequest(newTeacher);
-            if(result) {
-                setNewTeacherFormDisplay(false);
-                dispatch(getTeachers());            }
-            console.log(result.data);
+            dispatch(createTeacher(newTeacher));
+            setNewTeacherFormDisplay(false);
         } catch (e) {
             console.log(e);
         }
     };
 
-    const deleteTeacher = async (teacher) => {
+    const handleDelete = async (teacher) => {
         try {
-            const result = await deleteTeacherRequest(teacher);
-            if(result.data.deletedCount > 0) {
-                const filteredTeachers = teachers.filter((item) => item !== teacher);
-                setTeachers(filteredTeachers);
-            };
+            dispatch(deleteTeacher(teacher));
         } catch (e) {
             console.log(e);
         }
     }
 
-    const updateTeacher = async () => {
+    const handleUpdate = async () => {
         try {
-            const result = await dispatch(updateTeacher(editTeacher));
-            console.log(result.data);
-            dispatch(getTeachers());
+            dispatch(updateTeacher(editTeacher));
             setEditRow(null);
         } catch (e) {
             console.error(e);
@@ -214,24 +178,18 @@ const TeacherTable = () => {
 
 
     const handleNewTeacherDay = (day) => {
-        const updatedDays = [...newTeacherDays, day];
-        if(newTeacherDays.includes(day)) {
-            setNewTeacherDays(
-                newTeacherDays.filter(item => day !== item)
-            );
+        if(newTeacher.days.includes(day)) {
+            setNewTeacher({...newTeacher, days: newTeacher.days.filter(item => day !== item)});
         } else {
-            setNewTeacherDays(updatedDays);
+            setNewTeacher({...newTeacher, days: [...newTeacher.days, day]});
         };
     }
     
     const handleNewTeacherInstrument = (instr) => {
-        const updatedInstruments = [...newTeacherInstruments, instr];
-        if(newTeacherInstruments.includes(instr)) {
-            setNewTeacherInstruments(
-                newTeacherInstruments.filter(item => instr !== item)
-            );
+        if(newTeacher.instruments.includes(instr)) {
+            setNewTeacher({...newTeacher, instruments: newTeacher.instruments.filter(item => instr !== item)});
         } else {
-            setNewTeacherInstruments(updatedInstruments);
+            setNewTeacher({...newTeacher, instruments: [...newTeacher.instruments, instr]});
         };
     }
 
@@ -262,15 +220,17 @@ const TeacherTable = () => {
         <h1>Teachers</h1>
         <Table>
                     <Thead>
-                        <Th empty={true}/>
-                        <Th>Name</Th>
-                        <Th>Instruments</Th>
-                        <Th>Days</Th>
+                        <tr>
+                            <Th empty={true}/>
+                            <Th>Name</Th>
+                            <Th>Instruments</Th>
+                            <Th>Days</Th>
+                        </tr>
                     </Thead>
                     <Tbody>
                         {reduxTeachers?.map((teacher, rowIdx) => (
                             <Tr key={`teacher-${rowIdx}`}>
-                                <Td edit={true}><DeleteButton onClick={() => deleteTeacher(teacher)}/></Td>
+                                <Td edit={true}><DeleteButton onClick={() => handleDelete(teacher)}/></Td>
                                 <Td>
                                     {editRow === rowIdx 
                                     ? <Input 
@@ -337,7 +297,7 @@ const TeacherTable = () => {
                                 <EditButton onClick={()=>{setEditRow(rowIdx); setEditTeacher(teacher)}}/>
                                 : <Wrapper>
                                     <EditOffButton onClick={()=>setEditRow(null)}/>
-                                    <SaveButton onClick={()=>updateTeacher()}/>
+                                    <SaveButton onClick={()=>handleUpdate()}/>
                                 </Wrapper>
                                 }
                                 </Td>
@@ -349,7 +309,7 @@ const TeacherTable = () => {
                                <Td edit={true} />
                                 <Td>
                                     <Input type={'text'} 
-                                    onChange={(e)=>setNewTeacherName(e.target.value)} />
+                                    onChange={(e)=>setNewTeacher({...newTeacher, name: e.target.value})} />
                                 </Td>
                                 <Td>
                                 <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
@@ -360,7 +320,7 @@ const TeacherTable = () => {
                                             <ListItemIcon>
                                                 <Checkbox 
                                                 edge="start"
-                                                checked={newTeacherInstruments.includes(instr)}
+                                                checked={newTeacher.instruments.includes(instr)}
                                                 disableRipple/>
                                             </ListItemIcon>
                                             <ListItemText primary={instr}/>
@@ -378,7 +338,7 @@ const TeacherTable = () => {
                                             <ListItemIcon>
                                                 <Checkbox 
                                                 edge="start"
-                                                checked={newTeacherDays.includes(day)}
+                                                checked={newTeacher.days.includes(day)}
                                                 disableRipple/>
                                             </ListItemIcon>
                                             <ListItemText primary={day}/>

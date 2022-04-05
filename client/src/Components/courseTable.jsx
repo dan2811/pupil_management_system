@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
@@ -7,15 +7,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import SaveIcon from '@mui/icons-material/Save';
-
-
-import {
-    createCourseRequest,
-    retrieveCoursesRequest, 
-    updateCourseRequest,
-    deleteCourseRequest 
-} from '../requests/CourseRequests';
+import { createCourse, updateCourses, deleteCourses } from '../redux/courseSlice';
 import SnackBar from './snackBar';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const Wrapper = styled.div`
@@ -136,40 +130,24 @@ const Input = styled.input`
 
 const CourseTable = () => {
     const [newCourseFormDisplay, setNewCourseFormDisplay] = useState(false);
-    const [newCourseDescription, setNewCourseDescription] = useState('');
-    const [newCourseName, setNewCourseName] = useState('');
-    const [newCourseAges, setNewCourseAges] = useState('');
-    const [courses, setCourses] = useState([]);
+    const [newCourse, setNewCourse] = useState({
+        name: '',
+        description: '',
+        ages: '',
+        courses: []
+    });
     const [editRow, setEditRow] = useState(null);
-    const [editCourse, setEditCourse] = useState(null);
+    const [editCourse, setEditCourse] = useState({name: '', description: '', ages: ''});
     const [error, setError] = useState('');
 
-    
-    const fetchCoursesFromDatabase = async () => {
-        try {
-            const retrievedCourses = await retrieveCoursesRequest();
-            if(retrievedCourses) {
-                setCourses(retrievedCourses.data);
-            };
-        } catch (e) {
-            console.log('HERRRRERE');
-            setError('Failed to fetch courses');
-        }
-    };
+    const dispatch = useDispatch();
+
+    const reduxCourses = useSelector((state) => state.courses.courses);
 
     const handleAddNewCourse = async () => {
-        const newCourse = {
-            name: newCourseName,
-            description: newCourseDescription,
-            ages: newCourseAges
-        };
         try {
-            const result = await createCourseRequest(newCourse);
-            if(result) {
-                setNewCourseFormDisplay(false);
-                const newCourses = [...courses, newCourse]
-                setCourses(newCourses);
-            }
+            dispatch(createCourse(newCourse));
+            setNewCourseFormDisplay(false);
         } catch (e) {
             console.log(e);
         }
@@ -177,11 +155,7 @@ const CourseTable = () => {
 
     const deleteCourse = async (course) => {
         try {
-            const result = await deleteCourseRequest(course);
-            if(result.data.deletedCount > 0) {
-                const filteredCourses = courses.filter((item) => item !== course);
-                setCourses(filteredCourses);
-            };
+            dispatch(deleteCourses(course));
         } catch (e) {
             console.log(e);
         }
@@ -189,47 +163,27 @@ const CourseTable = () => {
 
     const updateCourse = async () => {
         try {
-            const result = await updateCourseRequest(editCourse);
-            if(result) {
-                fetchCoursesFromDatabase();
-                setEditRow(null);
-            }
+            dispatch(updateCourses(editCourse));
+            setEditRow(null);
         } catch (e) {
-            console.error(e);
+            console.log(e);
         }
     }
 
-
-    // const handleEditTeacherInstr = (instr, teacher) => {
-    //     const updatedTeacher = {...editTeacher, _id: teacher._id};
-    //     if(editTeacher.instruments.includes(instr)) {
-    //         updatedTeacher.instruments = updatedTeacher.instruments.filter((el) => el !== instr);
-    //         setEditTeacher({...updatedTeacher});
-    //     } else {
-    //         updatedTeacher.instruments = [...updatedTeacher.instruments, instr];
-    //         setEditTeacher({...updatedTeacher});
-    //     };
-    // }
-
-        useEffect( () => {
-            (async () => {
-                if(!error) await fetchCoursesFromDatabase();
-            })
-            ();
-        },[]);
-
-  return (
+        return (
     <Wrapper>
         <h1>Courses</h1>
         <Table>
                     <Thead>
-                        <Th empty={true}/>
-                        <Th>Course Name</Th>
-                        <Th>Description</Th>
-                        <Th>Age Range</Th>
+                        <tr>
+                            <Th empty={true}/>
+                            <Th>Course Name</Th>
+                            <Th>Description</Th>
+                            <Th>Age Range</Th>
+                        </tr>    
                     </Thead>
                     <Tbody>
-                        {courses?.map((course, rowIdx) => (
+                        {reduxCourses?.map((course, rowIdx) => (
                             <Tr key={`course-${rowIdx}`}>
                                 <Td edit={true}><DeleteButton onClick={() => deleteCourse(course)}/></Td>
                                 <Td>
@@ -237,8 +191,8 @@ const CourseTable = () => {
                                     editRow === rowIdx 
                                     ? <Input 
                                         type="text" 
-                                        placeholder={course.name} 
-                                        onChange={(e)=>course.name = e.target.value}
+                                        value={editCourse.name}
+                                        onChange={(e)=>setEditCourse({...editCourse, name: e.target.value})}
                                         /> 
                                     : course.name
                                     }
@@ -250,8 +204,8 @@ const CourseTable = () => {
                                             value={course.description}
                                             disabled />
                                         :   <textarea 
-                                        placeholder={course.description} 
-                                        onChange={e => course.description = e.target.value}
+                                        value={editCourse.description} 
+                                        onChange={e => setEditCourse({...editCourse, description: e.target.value})}
                                         /> 
                                     }
                                 </Td>
@@ -260,8 +214,8 @@ const CourseTable = () => {
                                             ?   course.ages
                                             :   <Input
                                                 type="text"
-                                                placeholder={course.ages} 
-                                                onChange={e => course.ages = e.target.value}
+                                                value={editCourse.ages} 
+                                                onChange={e => setEditCourse({...editCourse, ages: e.target.value})}
                                                 />
                                         }
                                 </Td>
@@ -283,18 +237,18 @@ const CourseTable = () => {
                                <Td edit={true} />
                                 <Td>
                                     <Input type={'text'} 
-                                    onChange={(e)=>setNewCourseName(e.target.value)} />
+                                    onChange={(e)=>setNewCourse({...newCourse, name: e.target.value})} />
                                 </Td>
                                 <Td>
                                     <textarea
-                                    onChange={e => setNewCourseDescription(e.target.value)}
+                                    onChange={e => setNewCourse({...newCourse, description: e.target.value})}
                                     />
                                 </Td>
 
                                 <Td>
                                     <Input
                                     type="text"
-                                    onChange={e => setNewCourseAges(e.target.value)}
+                                    onChange={e => setNewCourse({...newCourse, ages: e.target.value})}
                                     />
                                 </Td>
                                 <Td edit={true}>

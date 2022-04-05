@@ -157,12 +157,10 @@ app.get('/teachers', async (req, res) => {
     }
 });
 
-
-
 app.post('/create/teacher', async (req, res) => {
     try {
         const result = await Teacher.create(req.body);
-        res.send(result.insertedId);
+        res.send(result);
     } catch (e) {
         console.error(e);
     }
@@ -170,9 +168,7 @@ app.post('/create/teacher', async (req, res) => {
 
 app.post('/update/teacher', async (req, res) => {
     try {
-        const id = req.body.data._id;
-        const updates = {...req.body.data};
-        const result = await Teacher.findByIdAndUpdate(id, updates);
+        const result = await Teacher.findByIdAndUpdate(req.body.data._id, req.body.data, {new: true});
         res.send(result);
     } catch (e) {
         console.error(e);
@@ -182,8 +178,10 @@ app.post('/update/teacher', async (req, res) => {
 app.delete('/delete/teacher', async (req, res) => {
     try {
         const result = await Teacher.deleteMany(req.body);
-        res.send(result);
-    } catch (e) {
+        if(result.deletedCount) {
+            result._id = req.body._id;
+            res.send(result);
+        }    } catch (e) {
         console.error(e);
     }
 });
@@ -212,16 +210,14 @@ app.get('/lessons', async (req, res) => {
     }
 });
 
-
-// ATTENDANCE -------------------------------------------------------
-
-app.post('/update/attendance', async (req, res) => {
+app.post('/lessons/update', async (req, res) => {
     try {
-        const result = await Lesson.findOneAndUpdate({_id: req.body._id}, {attendance: req.body.attendance});
+        const result = await Lesson.findByIdAndUpdate(req.body.data._id, req.body.data, {new: true});
+        res.send(result);
     } catch (e) {
-        console.log(e);
+        console.error(e);
     }
-})
+});
 
 // COURSES ----------------------------------------------------------------------
 
@@ -245,7 +241,7 @@ app.post('/courses/create', async (req, res) => {
 
 app.post('/courses/update', async (req, res) => {
     try {
-        const result = await Course.findByIdAndUpdate(req.body.data._id, req.body.data);
+        const result = await Course.findByIdAndUpdate(req.body.data._id, req.body.data, {new: true});
         res.send(result);
     } catch (e) {
         console.error(e);
@@ -255,8 +251,10 @@ app.post('/courses/update', async (req, res) => {
 app.delete('/courses/delete', async (req, res) => {
     try {
         const result = await Course.deleteMany(req.body);
-        res.send(result);
-    } catch (e) {
+        if(result.deletedCount) {
+            result._id = req.body._id;
+            res.send(result);
+        }    } catch (e) {
         console.error(e);
     }
 });
@@ -283,7 +281,7 @@ app.post('/instruments/create', async (req, res) => {
 
 app.post('/instruments/update', async (req, res) => {
     try {
-        const result = await Instrument.findByIdAndUpdate(req.body.data._id, req.body.data);
+        const result = await Instrument.findByIdAndUpdate(req.body.data._id, req.body.data, {new: true});
         res.send(result);
     } catch (e) {
         console.error(e);
@@ -293,7 +291,10 @@ app.post('/instruments/update', async (req, res) => {
 app.delete('/instruments/delete', async (req, res) => {
     try {
         const result = await Instrument.deleteMany(req.body);
-        res.send(result);
+        if(result.deletedCount) {
+            result._id = req.body._id;
+            res.send(result);
+        }
     } catch (e) {
         console.error(e);
     }
@@ -321,6 +322,6 @@ app.post('/newclasses/create', async (req, res) => {
 
 
 
-app.listen(process.env.PORT || 5000, () => {
+app.listen(process.env.PORT || 8000, () => {
     console.log("Backend server is running!");
 });

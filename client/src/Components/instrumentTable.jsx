@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
@@ -7,17 +7,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import SaveIcon from '@mui/icons-material/Save';
-
-
-import {
-    createInstrumentRequest,
-    retrieveInstrumentsRequest, 
-    updateInstrumentRequest,
-    deleteInstrumentRequest 
-} from '../requests/InstrumentRequests';
+import { useSelector, useDispatch } from 'react-redux';
+import { createInstrument, updateInstrument, deleteInstrument } from '../redux/instrumentSlice';
 import SnackBar from './snackBar';
 import { Checkbox, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { retrieveCoursesRequest } from '../requests/CourseRequests';
 
 
 const Wrapper = styled.div`
@@ -138,76 +131,42 @@ const Input = styled.input`
 
 const InstrumentTable = () => {
     const [newInstrumentFormDisplay, setNewInstrumentFormDisplay] = useState(false);
-    const [newInstrumentCourses, setNewInstrumentCourses] = useState([]);
-    const [newInstrumentName, setNewInstrumentName] = useState('');
-    const [instruments, setInstruments] = useState([]);
-    const [allCourses, setAllCourses] = useState([]);
+    const [newInstrument, setNewInstrument] = useState({
+                                                        name: '',
+                                                        courses: []
+                                                    });
     const [editRow, setEditRow] = useState(null);
     const [editInstrument, setEditInstrument] = useState(null);
     const [error, setError] = useState('');
 
-    
-    const fetchInstrumentsFromDatabase = async () => {
-        try {
-            const retrievedInstruments = await retrieveInstrumentsRequest();
-            if(retrievedInstruments) {
-                setInstruments(retrievedInstruments.data);
-            };
-        } catch (e) {
-            setError('Failed to fetch Instruments');
-        }
-    };
-
-    const fetchCoursesFromDatabase = async () => {
-        try {
-            const retrievedCourses = await retrieveCoursesRequest();
-            if(retrievedCourses) {
-                setAllCourses(retrievedCourses.data);
-            };
-        } catch (e) {
-            console.log(e);
-        }
-    };
+    const dispatch = useDispatch();
+    const allCourses = useSelector((state) => state.courses.courses);
+    const reduxInstruments = useSelector((state) => state.instruments.instruments); 
 
     const handleAddNewInstrument = async () => {
-        const newInstrument = {
-            name: newInstrumentName,
-            courses: newInstrumentCourses
-        };
         try {
-            const result = await createInstrumentRequest(newInstrument);
-            if(result) {
-                setNewInstrumentFormDisplay(false);
-                const newInstruments = [...instruments, newInstrument]
-                setInstruments(newInstruments);
-            }
+            dispatch(createInstrument(newInstrument));
+            setNewInstrumentFormDisplay(false);
+            setNewInstrument({
+                name: '',
+                courses: []
+            });
         } catch (e) {
             console.log(e);
         }
     };
 
-    const deleteInstrument = async (instrument) => {
+    const update = async () => {
         try {
-            const result = await deleteInstrumentRequest(instrument);
-            if(result.data.deletedCount > 0) {
-                const filteredInstruments = instruments.filter((item) => item !== instrument);
-                setInstruments(filteredInstruments);
-            };
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    const updateInstrument = async () => {
-        try {
-            const result = await updateInstrumentRequest(editInstrument);
-            if(result) {
-                fetchInstrumentsFromDatabase();
-                setEditRow(null);
-            }
+            dispatch(updateInstrument(editInstrument));
+            setEditRow(null);
         } catch (e) {
             console.error(e);
         }
+    };
+
+    const deleteInstr = async (instrument) => {
+        dispatch(deleteInstrument(instrument));
     };
 
 
@@ -217,58 +176,52 @@ const InstrumentTable = () => {
             updatedInstrument.courses = updatedInstrument.courses.filter((el) => el !== courseId);
             setEditInstrument(updatedInstrument);
         } else {
-            updatedInstrument.courses.push(courseId);
+            updatedInstrument.courses = [...updatedInstrument.courses, courseId];
             setEditInstrument(updatedInstrument);
         };
     };
 
     const handleAddCourseToNewInstrument = (courseId) => {
-        let updated = [...newInstrumentCourses];
-        if(newInstrumentCourses.includes(courseId)) {
+        let updated = [...newInstrument.courses];
+        if(newInstrument.courses.includes(courseId)) {
             updated = updated.filter((el) => el !== courseId);
-            setNewInstrumentCourses(updated);
+            setNewInstrument({...newInstrument, courses: updated});
         } else {
             updated.push(courseId);
-            setNewInstrumentCourses(updated);
+            setNewInstrument({...newInstrument, courses: updated});
         };
     };
-
-        useEffect( () => {
-            (async () => {
-                 await fetchInstrumentsFromDatabase();
-                 await fetchCoursesFromDatabase();
-            })
-            ();
-        },[]);
 
   return (
     <Wrapper>
         <h1>Instruments</h1>
         <Table>
                     <Thead>
-                        <Th empty={true}/>
-                        <Th>Instrument Name</Th>
-                        <Th>Courses</Th>
+                        <tr>
+                            <Th empty={true}/>
+                            <Th>Instrument Name</Th>
+                            <Th>Courses</Th>
+                        </tr>
                     </Thead>
                     <Tbody>
-                        {instruments?.map((instrument, rowIdx) => (
+                        {reduxInstruments?.map((instrument, rowIdx) => (
                             <Tr key={`instrument-${rowIdx}`}>
-                                <Td edit={true}><DeleteButton onClick={() => deleteInstrument(instrument)}/></Td>
+                                <Td edit={true}><DeleteButton onClick={() => deleteInstr(instrument)}/></Td>
                                 <Td>
                                     {
                                     editRow === rowIdx 
                                     ? <Input 
                                         type="text" 
-                                        placeholder={instrument.name} 
+                                        value={instrument.name} 
                                         onChange={(e)=>instrument.name = e.target.value}
                                         /> 
-                                    : instrument.name
+                                    : instrument?.name
                                     }
                                 </Td>
                                 <Td>
                                     <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                                         {editRow !== rowIdx
-                                            ?   instrument.courses?.map((courseId, idx) => (
+                                            ?   instrument?.courses?.map((courseId, idx) => (
                                                 <ListItem
                                                 key={`course-${idx}`}
                                                 disablePadding>
@@ -281,7 +234,7 @@ const InstrumentTable = () => {
                                                 disablePadding>
                                                     <ListItemButton onClick={() => handleEditInstrumentCourses(course._id)}>
                                                         <ListItemIcon>
-                                                            <Checkbox checked={editInstrument.courses.includes(course._id)} />
+                                                            <Checkbox checked={editInstrument?.courses.includes(course._id)} />
                                                         </ListItemIcon>
                                                         <ListItemText primary={course.name} />
                                                     </ListItemButton>
@@ -296,7 +249,7 @@ const InstrumentTable = () => {
                                 <EditButton onClick={()=>{setEditRow(rowIdx); setEditInstrument(instrument)}}/>
                                 : <Wrapper>
                                     <EditOffButton onClick={()=>setEditRow(null)} />
-                                    <SaveButton onClick={()=>updateInstrument()} />
+                                    <SaveButton onClick={()=>update()} />
                                 </Wrapper>
                                 }
                                 </Td>
@@ -308,7 +261,7 @@ const InstrumentTable = () => {
                                <Td edit={true} />
                                 <Td>
                                     <Input type={'text'} 
-                                    onChange={(e)=>setNewInstrumentName(e.target.value)} />
+                                    onChange={(e)=>setNewInstrument({...newInstrument, name: e.target.value})} />
                                 </Td>
                                 <Td>
                                     <List>
@@ -318,7 +271,7 @@ const InstrumentTable = () => {
                                                 disablePadding>
                                                     <ListItemButton onClick={() => handleAddCourseToNewInstrument(course._id)}>
                                                         <ListItemIcon>
-                                                            <Checkbox checked={newInstrumentCourses.includes(course._id)} />
+                                                            <Checkbox checked={newInstrument.courses.includes(course._id)} />
                                                         </ListItemIcon>
                                                         <ListItemText primary={course.name} />
                                                     </ListItemButton>

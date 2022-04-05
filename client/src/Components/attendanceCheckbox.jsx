@@ -5,11 +5,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import Badge from '@mui/material/Badge';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useState } from 'react';
-import { updateAttendanceRequest } from '../requests/AttendanceRequests';
 import TextField from '@mui/material/TextField';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import EditIcon from '@mui/icons-material/Edit';
+import { useDispatch } from 'react-redux';
+import { updateLesson } from '../redux/lessonSlice';
 
 
 const Wrapper = styled.div`
@@ -116,21 +117,27 @@ const AttendanceCheckbox = ({attended, notes, pupilId, allClasses, date, day, lo
         };
         return array[newAttendanceIndex];
     }
-        
+    
     const updateClasses = async (id, clickCheckbox) => {
-        const newAttendanceStatus = getNextAttendanceStatus();
-        const lessonToModify = {...allClasses.filter(lesson => lesson._id === lessonId)[0]};
-        const uneffectedClasses = allClasses.filter(lesson => lesson._id !== lessonId);
-        const pupilAttendanceToModify = lessonToModify.attendance.find(el => el.date === date.date).pupils.find(student => student.pupil_id === id)
-            if (clickCheckbox) pupilAttendanceToModify.attended = newAttendanceStatus;
-            pupilAttendanceToModify.notes = updatedNotes;
+        console.log(id, clickCheckbox, attended);
+        const attendanceStatus = clickCheckbox ? getNextAttendanceStatus() : attended;
+        const lessonToModify = allClasses.find(lesson => lesson._id === lessonId);
+        const dateObjToModify = lessonToModify.attendance.find(d => d.date === date.date);
+        const pupilToModify = dateObjToModify.pupils.find(pupil => pupil.pupil_id === id);
+        const modifiedPupil = {...pupilToModify, attended: attendanceStatus, notes: editNotes};
         
-        setAllClasses([...uneffectedClasses,  lessonToModify]);
-
-        await updateAttendanceRequest(lessonToModify);
+        const modifiedLesson = {...lessonToModify, attendance: [
+            ...lessonToModify.attendance.filter((dat => dat.date !== date.date)), {
+                ...dateObjToModify, pupils: [
+                    ...dateObjToModify.pupils.filter(pupil => pupil.pupil_id !== id), modifiedPupil
+                ]
+            }
+        ]};
+        dispatch(updateLesson(modifiedLesson));
     };
 
-    const [editNotes, setEditNotes] = useState(false);
+    const dispatch = useDispatch();
+    const [editNotes, setEditNotes] = useState('');
     const [updatedNotes, setUpdatedNotes] = useState(notes);
 
   return (
@@ -138,6 +145,7 @@ const AttendanceCheckbox = ({attended, notes, pupilId, allClasses, date, day, lo
         <CheckboxWrapper onClick={()=>updateClasses(pupilId, true)}>
             {returnCheckboxIcon()}
         </CheckboxWrapper>
+        {date.date}
         <Notes onClick={()=>setEditNotes(true)}>
             {editNotes 
             ?
